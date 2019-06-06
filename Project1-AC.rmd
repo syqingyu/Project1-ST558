@@ -1,0 +1,10 @@
+---
+title: "<center> Project I </center>"
+author: "<center>Avisek Choudhury</center>"
+date: "<center>6/4/2019</center>"
+output:
+  html_document:
+  toc: yes
+pdf_document:
+  toc: yes
+---
