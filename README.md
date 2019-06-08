@@ -1,12 +1,4 @@
----
-title: "Project1-ST558"
-date: "06/2019"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
-```
+# Project1
 
 ## Vignettes
 Vignettes are explanations of some concept, package, etc. with text, code, and output interweaved. We
