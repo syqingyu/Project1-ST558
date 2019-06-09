@@ -1,10 +1,56 @@
 ---
 title: "<center> Project I </center>"
 author: "<center>Avisek Choudhury</center>"
-date: "<center>6/4/2019</center>"
+date: "<center>6/3/2019</center>"
 output:
   html_document:
-  toc: yes
-pdf_document:
-  toc: yes
+    toc: yes
+  pdf_document:
+    toc: yes
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# JSON File
+
+There are several JSON data sources are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
+
+# Reading JSON File
+
+### Download and Examine the JSON file
+
+After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
+
+```{r Horseshoe Crabs, out.width = "400px", echo=FALSE}
+knitr::include_graphics("C:/Users/Avisek/Downloads/ST558/Project1/JSON1.jpg")
+```
+<br>
+We have used the `jsonlite` package to read in the JSON file. 
+
+```{r readJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+library(jsonlite)
+library(tidyverse)
+library(gdata)
+library(ggplot2)
+
+myJSON <- fromJSON("C:/Users/Avisek/Downloads/ST558/DrugOverdose.json")
+class(myJSON)
+```
+Let's examine the structure and attibutes a bit further.
+
+```{r readJSON2, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+attributes(myJSON)
+attributes(myJSON[['meta']])
+attributes(myJSON[['meta']][['view']])
+```
+### Extract the column names.
+
+From the webpage we have observed the JSON has 41 rows. By inspecting the column names metadata we can discard the first 9 columns and select the rest.
+
+```{r readJSON3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+colNames <-myJSON[['meta']][['view']][['columns']]
+colNames<- colNames[c(9:50),2]
+colNames
+```
+
