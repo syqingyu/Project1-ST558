@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # JSON File
 
-There are several JSON data sources are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
+There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
 
 # Reading JSON File
 
@@ -22,10 +22,13 @@ There are several JSON data sources are available from federal/state/county/city
 
 After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
 
-```{r Horseshoe Crabs, out.width = "400px", echo=FALSE}
-knitr::include_graphics("C:/Users/Avisek/Downloads/ST558/Project1/JSON1.jpg")
+```{r JSON PIC1, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON1.jpg")
 ```
-<br>
+```{r JSON PIC2, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON2.jpg")
+```
+<br><br>
 We have used the `jsonlite` package to read in the JSON file. 
 
 ```{r readJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
@@ -34,7 +37,7 @@ library(tidyverse)
 library(gdata)
 library(ggplot2)
 
-myJSON <- fromJSON("C:/Users/Avisek/Downloads/ST558/DrugOverdose.json")
+myJSON <- fromJSON("./files/DrugOverdose.json")
 class(myJSON)
 ```
 Let's examine the structure and attibutes a bit further.
@@ -54,3 +57,52 @@ colNames<- colNames[c(9:50),2]
 colNames
 ```
 
+### Extract the Data Portion
+
+Let's examine the data segment of the JSON file in the JSON editor/browser.
+
+```{r JSON PIC3, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON3.jpg")
+```
+<br><br>
+We can see the data portion of the JSON file is a nested list and let's make sure the length of the top list matches the no of rows we have from the source page.
+
+```{r readJSON4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+myData <- myJSON[['data']]
+length(myData)
+```
+### Generate Data Frame from JSON
+
+This custom function reads the list data and convert that to a data frame and tibble. The DeathCityGeo, ResidenceCityGeo and InjuryCityGeo are nested list. The function reads the lattitude and longtitude from those nested lists.
+
+```{r readJSON5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+collectData<-function(var){
+  sapply(myData, function(x) returnData(x, var)) 
+}
+
+returnData<-function(x, var){
+  if(length(x[[var]]) > 1){
+    return(trim(paste(x[[var]][[2]], x[[var]][[3]], sep = ",")))
+  }
+  else{
+    if(!is.null( x[[var]])){
+    return( trim(x[[var]]))
+  }else{
+    return(NA)
+  }
+  }
+}
+
+drugDF<-data.frame(sapply(9:50, collectData), stringsAsFactors=FALSE)
+
+drugOverDoseTD <- tbl_df(drugDF)
+colnames(drugOverDoseTD) <- colNames
+drugOverDoseTD
+```
+Convert the Age and Town Index to numeric and the date column to date type.
+
+```{r convertJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+drugOverDoseTD['Age'] <- as.numeric(drugOverDoseTD$Age)
+drugOverDoseTD['Town Index'] <- as.numeric(drugOverDoseTD$`Town Index`)
+drugOverDoseTD['Date'] <- as.Date(drugOverDoseTD$Date)
+```
