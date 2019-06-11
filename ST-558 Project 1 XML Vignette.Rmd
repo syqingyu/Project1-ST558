@@ -1,0 +1,13 @@
+---
+title: "ST-558 Project 1 Vignette"
+author: "Thom Teears"
+date: "6/11/2019"
+output:
+  html_document:
+    toc: yes
+    smooth_scroll: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
