@@ -1,5 +1,5 @@
 ---
-title: "Homework7 Part1"
+title: "Convert XML to data frame"
 author: "Yan Shi"
 date: "06/10/2019"
 ---
@@ -10,7 +10,7 @@ library(xml2)
 ```
 
 ```{r}
-# Read in xml file 
+# Read in xml file  
 xml_file <- read_xml("https://data.cdc.gov/api/views/w9j2-ggv5/rows.xml?accessType=DOWNLOAD")
 
 # Check the xml structure size
