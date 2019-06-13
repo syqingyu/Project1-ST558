@@ -394,12 +394,16 @@ Avisek Choudhury
 <li><a href="#extract-the-data-portion">Extract the Data Portion</a></li>
 <li><a href="#generate-data-frame-from-json">Generate Data Frame from JSON</a></li>
 </ul></li>
+<li><a href="#create-new-variables">Create New Variables</a></li>
+<li><a href="#data-analysis">Data Analysis</a><ul>
+<li><a href="#summarise-data">Summarise data</a></li>
+</ul></li>
 </ul>
 </div>
 
 <div id="json-file" class="section level1">
 <h1>JSON File</h1>
-<p>There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href="https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw"> accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.</p>
+<p>JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSOON is becoming more and more popular these days as it’s compact, lightweight and easy to use. JSON uses a map data structure rather than XML’s tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.<br> There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href="https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw"> accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.</p>
 </div>
 <div id="reading-json-file" class="section level1">
 <h1>Reading JSON File</h1>
@@ -527,6 +531,37 @@ drugOverDoseTD</code></pre>
 <pre class="r"><code>drugOverDoseTD[&#39;Age&#39;] &lt;- as.numeric(drugOverDoseTD$Age)
 drugOverDoseTD[&#39;Town Index&#39;] &lt;- as.numeric(drugOverDoseTD$`Town Index`)
 drugOverDoseTD[&#39;Date&#39;] &lt;- as.Date(drugOverDoseTD$Date)</code></pre>
+</div>
+</div>
+<div id="create-new-variables" class="section level1">
+<h1>Create New Variables</h1>
+<p>We have the Date and DateType column which has DateReported/DateofDeath. We can extract the Year from the date which can help us to summarize data by year if needed. Also we have another quantative column Age; and we can use that to create a categorical variable which may be usuful to analyze the affected ages.</p>
+<pre class="r"><code>#Create the Year Variable
+drugOverDoseTD[&#39;Year&#39;] &lt;- as.numeric(format(as.Date(drugOverDoseTD$Date, format=&quot;%Y-%m-%d&quot;),&quot;%Y&quot;))
+
+#Create Age Category Variable 
+drugOverDoseTD&lt;- drugOverDoseTD %&gt;% mutate(Age_Category = ifelse(Age &lt; 18, &#39;Minor&#39;, ifelse(Age &gt; 18 &amp; Age &lt;= 25, &#39;Age 18 to 25&#39;, ifelse(Age &gt; 25 &amp; Age &lt;= 35, &#39;Age 26 to 35&#39;, ifelse(Age &gt; 35 &amp; Age &lt;= 45, &#39;Age 36 to 45&#39;, ifelse(Age &gt; 46 &amp; Age &lt;= 55, &#39;Age 46 to 55&#39;, ifelse(Age &gt; 55 &amp; Age &lt;= 65, &#39;Age 56 to 65&#39;, &#39;More than 65&#39;)))))))
+
+#Verify the results
+head(drugOverDoseTD[, 43:44], n=10)</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##     Year Age_Category
+##    &lt;dbl&gt; &lt;chr&gt;       
+##  1  2014 &lt;NA&gt;        
+##  2  2013 Age 46 to 55
+##  3  2016 Age 26 to 35
+##  4  2016 Age 18 to 25
+##  5  2013 Age 18 to 25
+##  6  2014 Age 18 to 25
+##  7  2012 Age 18 to 25
+##  8  2013 Age 36 to 45
+##  9  2012 Age 36 to 45
+## 10  2013 Age 46 to 55</code></pre>
+</div>
+<div id="data-analysis" class="section level1">
+<h1>Data Analysis</h1>
+<div id="summarise-data" class="section level3">
+<h3>Summarise data</h3>
 </div>
 </div>
 
