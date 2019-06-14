@@ -45,6 +45,52 @@ The XML data set chosen for this vignette was found at [Data.gov](https://catalo
 
 4.The data you read in should have at least two categorical variables and two quantitative variables.
 • Read in the data set describing the options your package’s functions allow.
+
+```{r}
+library(xml2)
+# Read in xml file  
+xml_file <- read_xml("https://data.cdc.gov/api/views/w9j2-ggv5/rows.xml?accessType=DOWNLOAD")
+
+# Check the xml structure size
+xml_length(xml_file)
+xml_length(xml_children(xml_file))
+xml_length(xml_child(xml_children(xml_file), 1))
+xml_length(xml_child(xml_child(xml_children(xml_file), 1)))
+
+# Check if each child has same amount of variables
+max(xml_length(xml_children(xml_children(xml_file))))
+min(xml_length(xml_children(xml_children(xml_file))))
+
+# Set number of columns for final dataframe
+ncols <- max(xml_length(xml_children(xml_children(xml_file))))
+
+# Find the index of first element whose length is ncols
+ind_name <- which(xml_length(xml_children(xml_children(xml_file)))==5)[1]
+
+# Change it to a large list
+xml_list <- as_list(xml_file)
+
+# Check the list size
+length(xml_list)
+length(xml_list[[1]])
+length(xml_list[[1]][[1]])
+length(xml_list[[1]][[1]][[2]])
+
+# For-loop to combine list to a dataframe
+deathDF <- data.frame(matrix(ncol = ncols, nrow = 0))
+colnames(deathDF) <- names(xml_list[[1]][[1]][[ind_name]])
+for (i in 1:length(xml_list[[1]][[1]])){
+  tmp <- as.data.frame(xml_list[[1]][[1]][[i]])
+  colnames(tmp) <- names(xml_list[[1]][[1]][[i]])
+  deathDF <- merge(deathDF, tmp, all = TRUE)
+}
+
+# create a table for deathDF
+names(deathDF)<- c("Year", "Race", "Sex", "Mortality", "Life Expectancy")
+library(DT)
+datatable(deathDF, rownames = FALSE)
+```
+
 • Perform basic exploratory data analysis that reveals a meaningful idea that you would reasonable want to investigate further. Not all things reported need to show something meaningful (i.e. graphs that show no relationship are fine) but you should end up with a solid lead that you would pursue further.
 
 ## Function Applied to Data
