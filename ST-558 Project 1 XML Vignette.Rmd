@@ -8,11 +8,14 @@ output:
     smooth_scroll: true
 ---
 
+
+# Vignette Content Details
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# General Description of XML Data 
+## General Description of XML Data 
 
 XML stands for eXtensible Markup Language and is defined by [Merriam-Webster](https://www.merriam-webster.com/dictionary/XML) as "a markup language with use and design similar to HTML but employing tags defined by the user that can be used to indicate both the logical structure and the display specifications of the coded data."
 
@@ -31,7 +34,8 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
 * Multiple Applications  
     - XML allows the user to create many different display pages with different styles and formats with one XML data page.
 
-# Packages/Functions for Reading XML Data
+## Packages/Functions for Reading XML Data
+
 * R package XML, xml2 are available for reading XML data files.
 * For this project, I choose package xml2. Actually, xml2 package is similar to the XML package, and the reasons that I use [xlm2 (from Rdocumentation)](https://www.rdocumentation.org/packages/xml2/versions/1.2.0) are as follows:  
     + xml2 takes care of memory management for us. It will automatically free the memory used by an XML document as soon as the last reference to it goes away.  
@@ -39,15 +43,25 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
     + xml2 has a very simple class hierarchy so don’t need to think about exactly what type of object you have, xml2 will just do the right thing.  
     + More convenient handling of namespaces in Xpath expressions, like xml_ns() and xml_ns_strip().
 
+<<<<<<< HEAD
 # Description of Specific Data Set Chosen
+=======
+
+## Description of Specific Data Set Chosen
+>>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
-# Read in Data Set and Data Exploration
 
+<<<<<<< HEAD
 ## Read in XML and convert it to data frame
+=======
+## Read in Data Set and Data Exploration
+>>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
-```{r}
+### Read in the data set describing the options your package’s functions allow.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, include=FALSE}
 library(xml2)
 # Read in xml file  
 xml_file <- read_xml("https://data.cdc.gov/api/views/w9j2-ggv5/rows.xml?accessType=DOWNLOAD")
@@ -90,17 +104,149 @@ for (i in 1:length(xml_list[[1]][[1]])){
 names(deathDF)<- c("Year", "Race", "Sex", "Mortality", "Life Expectancy")
 library(DT)
 datatable(deathDF, rownames = FALSE)
+
 ```
 
+<<<<<<< HEAD
 ## Describe the options xml2 package’s functions allow.
 
 # Data Analysis
 ## Create a useful function(s)
+=======
+## Data Analysis
+
+### Function Applied to Data
+
+The function applied to the data set plots the time series of death rate and average life expectancy for each race and sex grouping. Results show an increase in average life expectancy and a decrease of death rate over time, possibly due to improvements in medicine. Notice the high mortality and low average life expectancy spikes during the early 1900's which, could be related to high death rates during World War I and the influenza epidemic of 1918.
+
+```{r, plot_function ,echo=FALSE, message=FALSE, results='hide'}
+library(tidyverse)
+library(ggplot2)
+df <- deathDF
+
+ plotFun <- function(df){
+  df <- df %>% mutate(Race_Sex = paste(Race, Sex, sep = "/")) # combine race and sex into one column
+  df$Race_Sex <- as.factor(df$Race_Sex) # create a factor of race and sex
+  df$Year <- as.numeric(as.character(df$Year)) # Convert year to character then to numeric
+  df$Mortality <- as.numeric(as.character(df$Mortality)) # convert mortality to character and then numeric
+  df$`Life Expectancy` <- as.numeric(as.character(df$`Life Expectancy`, na.rm = TRUE)) # convert average life expectancy into character then numeric
+  df_mort <- df %>% select(Year, Mortality, Race_Sex) # Subset mortality data
+  df_avg_life_exp <- df %>% select(Year, avg_life_exp = `Life Expectancy`, Race_Sex) %>% na.omit() # Subset average life expectancy data
+  
+  # Plot Mortality and average life expectancy over time by race and sex
+  g1 <- ggplot(data = df_mort, aes(x = Year, y = Mortality, group = Race_Sex))
+  plot1 <- g1 +  geom_line(aes(linetype = Race_Sex, color = Race_Sex)) + geom_point(aes(color = Race_Sex)) + labs(title = "Death Rate over Time by Race and Sex", x = "Year", y = "Death Rate (Deaths per 100,000)")
+  g2 <- ggplot(data = df_avg_life_exp, aes(x = Year, y = avg_life_exp , group = Race_Sex))
+  plot2 <- g2 +  geom_line(aes(linetype = Race_Sex, color = Race_Sex)) + geom_point(aes(color = Race_Sex)) + labs(title = "Average Life Expectancy over Time by Race and Sex", x = "Year", y = "Average Life Expectancy")
+
+  return(list(plot1, plot2))
+  
+}
+plotFun(df)
+```
+>>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
 ## Create New Variable
 
 
 ## Contigency Tables and Numeric Summaries
+
+### Full Table
+
+The conitigency table below shows that the data for each race and sex have equal counts of estimates.
+
+```{r, race_sex_contigency_table, warning=FALSE, echo=FALSE}
+# Create a 2-D contigency table
+knitr::kable(table(df$Race, df$Sex), caption = "Race and Sex Information")
+```
+
+### Numeric Summaries by Race
+Below are three summaries of the data set broken down by race including quantiles, mininums, maximums, and NA's. Trends show that blacks tend to have higher death rates and correspondingly lower average life expectancy than whites.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+# Create a function to summarise data into tables by race
+summaryFun <- function(df, race){
+  library(tidyverse)
+  df$Race <- as.factor(df$Race) # Convert race to a factor
+  df$Year <- as.factor(df$Year) # Convert year to a factor
+  df$Mortality <- as.numeric(as.character(df$Mortality)) # Convert Mortality to numeric
+  df$`Life Expectancy` <- as.numeric(df$`Life Expectancy`) # Convert Life Expectancy to numeric
+  df <- df %>% filter(Race == race) # Filter by race
+  for (i in 1:length(df)){
+    nums <- unlist(lapply(df, is.numeric)) # Create logical vector of whether the columns are numeric
+    if(isTRUE(nums[i])){ # Apply the summaries only to numeric columns
+    rownames <- if(any(is.na(df[i]))){ # Provide appropriate row names
+      c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max", "NA")
+    } else {
+      c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max")
+    }
+    
+      mydf <- as.data.frame(as.numeric(substr(summary(df[i]), 9, 15)), row.names = rownames) # Summarise the column and extract only values of interest
+      colnames(mydf) <- colnames(df[i]) # Keep appropriate column names
+      if(all(!is.na(df[i]))){
+        mydf[7, 1] <- 0
+        row.names(mydf)[7] <- "NA"
+        }
+    }
+    if(i == 4){ # Create first df
+    firstdf <- mydf 
+    } else if(i == 5){ # Add second df
+    outdf <- cbind(firstdf, mydf)
+    }
+    }
+   sum_cap <- "Summary of" # Create beginning of caption
+  cption <- paste(sum_cap, race, sep = " ") # Add race name to caption
+  return(knitr::kable(outdf, caption = cption)) # return desired data table with caption
+}
+
+summaryFun(df, "All Races")
+summaryFun(df, "Black")
+summaryFun(df, "White")
+```
+
+### Numeric Summaries by Sex
+Below are three summaries of the data set broken down by sex including quantiles, mininums, maximums, and NA's.The results show that males tend to have higher death rates and correspondingly lower average life expectancy than females.
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
+# Create a function to summarise data into tables by sex
+summaryFun <- function(df, sex){
+  library(tidyverse)
+  df$Sex <- as.factor(df$Sex) # Convert sex to a factor
+  df$Year <- as.factor(df$Year) # Convert year to a factor
+  df$Mortality <- as.numeric(as.character(df$Mortality)) # Convert Mortality to numeric
+  df$`Life Expectancy` <- as.numeric(df$`Life Expectancy`) # Convert Life Expectancy to numeric
+  df <- df %>% filter(Sex == sex) # Filter by sex
+  for (i in 1:length(df)){
+    nums <- unlist(lapply(df, is.numeric)) # Create logical vector of whether the columns are numeric
+    if(isTRUE(nums[i])){ # Apply the summaries only to numeric columns
+    rownames <- if(any(is.na(df[i]))){ # Provide appropriate row names
+      c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max", "NA")
+    } else {
+      c("Min.", "1st Qu.", "Median", "Mean", "3rd Qu.", "Max")
+    }
+    
+      mydf <- as.data.frame(as.numeric(substr(summary(df[i]), 9, 15)), row.names = rownames) # Summarise the column and extract only values of interest
+      colnames(mydf) <- colnames(df[i]) # Keep appropriate column names
+      if(all(!is.na(df[i]))){
+        mydf[7, 1] <- 0
+        row.names(mydf)[7] <- "NA"
+        }
+    }
+    if(i == 4){ # Create first df
+    firstdf <- mydf 
+    } else if(i == 5){ # Add second df
+    outdf <- cbind(firstdf, mydf)
+    }
+    }
+   sum_cap <- "Summary of" # Create beginning of caption
+  cption <- paste(sum_cap, sex, sep = " ") # Add sex name to caption
+  return(knitr::kable(outdf, caption = cption)) # return desired data table with caption
+}
+
+summaryFun(df, "Both Sexes")
+summaryFun(df, "Female")
+summaryFun(df, "Male")
+```
 
 ## Plotted Data
 
