@@ -13,8 +13,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 # JSON File
-
-There are several JSON data sources are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
+JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSOON is becoming more and more popular these days as it's compact, lightweight and easy to use. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.<br>
+There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
 
 # Reading JSON File
 
@@ -22,10 +22,13 @@ There are several JSON data sources are available from federal/state/county/city
 
 After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
 
-```{r Horseshoe Crabs, out.width = "400px", echo=FALSE}
-knitr::include_graphics("C:/Users/Avisek/Downloads/ST558/Project1/JSON1.jpg")
+```{r JSON PIC1, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON1.jpg")
 ```
-<br>
+```{r JSON PIC2, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON2.jpg")
+```
+<br><br>
 We have used the `jsonlite` package to read in the JSON file. 
 
 ```{r readJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
@@ -34,7 +37,7 @@ library(tidyverse)
 library(gdata)
 library(ggplot2)
 
-myJSON <- fromJSON("C:/Users/Avisek/Downloads/ST558/DrugOverdose.json")
+myJSON <- fromJSON("./files/DrugOverdose.json")
 class(myJSON)
 ```
 Let's examine the structure and attibutes a bit further.
@@ -54,3 +57,76 @@ colNames<- colNames[c(9:50),2]
 colNames
 ```
 
+### Extract the Data Portion
+
+Let's examine the data segment of the JSON file in the JSON editor/browser.
+
+```{r JSON PIC3, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON3.jpg")
+```
+<br><br>
+We can see the data portion of the JSON file is a nested list and let's make sure the length of the top list matches the no of rows we have from the source page.
+
+```{r readJSON4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+myData <- myJSON[['data']]
+length(myData)
+```
+### Generate Data Frame from JSON
+
+This custom function reads the list data and convert that to a data frame and tibble. The DeathCityGeo, ResidenceCityGeo and InjuryCityGeo are nested list. The function reads the lattitude and longtitude from those nested lists.
+
+```{r readJSON5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+collectData<-function(var){
+  sapply(myData, function(x) returnData(x, var)) 
+}
+
+returnData<-function(x, var){
+  if(length(x[[var]]) > 1){
+    return(trim(paste(x[[var]][[2]], x[[var]][[3]], sep = ",")))
+  }
+  else{
+    if(!is.null( x[[var]])){
+    return( trim(x[[var]]))
+  }else{
+    return(NA)
+  }
+  }
+}
+
+drugDF<-data.frame(sapply(9:50, collectData), stringsAsFactors=FALSE)
+
+drugOverDoseTD <- tbl_df(drugDF)
+colnames(drugOverDoseTD) <- colNames
+drugOverDoseTD
+```
+Convert the Age and Town Index to numeric and the date column to date type.
+
+```{r convertJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+drugOverDoseTD['Age'] <- as.numeric(drugOverDoseTD$Age)
+drugOverDoseTD['Town Index'] <- as.numeric(drugOverDoseTD$`Town Index`)
+drugOverDoseTD['Date'] <- as.Date(drugOverDoseTD$Date)
+```
+
+# Create New Variables
+
+We have the Date and DateType column which has  DateReported/DateofDeath. We can extract the Year from the date which can help us to summarize data by year if needed. Also we have another quantative column Age; and we can use that to create a categorical variable which may be usuful to analyze the affected ages.
+
+```{r createVar1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+#Create the Year Variable
+drugOverDoseTD['Year'] <- as.numeric(format(as.Date(drugOverDoseTD$Date, format="%Y-%m-%d"),"%Y"))
+
+#Create Age Category Variable 
+drugOverDoseTD<- drugOverDoseTD %>% mutate(Age_Category = ifelse(Age < 18, 'Minor', ifelse(Age > 18 & Age <= 25, 'Age 18 to 25', ifelse(Age > 25 & Age <= 35, 'Age 26 to 35', ifelse(Age > 35 & Age <= 45, 'Age 36 to 45', ifelse(Age > 46 & Age <= 55, 'Age 46 to 55', ifelse(Age > 55 & Age <= 65, 'Age 56 to 65', 'More than 65')))))))
+
+#Verify the results
+head(drugOverDoseTD[, 43:44], n=10)
+```
+
+# Data Analysis
+
+### Summarise data
+
+```{r summData1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+
+
+```
