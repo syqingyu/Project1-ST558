@@ -12,9 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Vignette Content Details
-
-## General Description of XML Data 
+# General Description of XML Data 
 
 XML stands for eXtensible Markup Language and is defined by [Merriam-Webster](https://www.merriam-webster.com/dictionary/XML) as "a markup language with use and design similar to HTML but employing tags defined by the user that can be used to indicate both the logical structure and the display specifications of the coded data."
 
@@ -22,29 +20,33 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
 
 [Lifewire](https://www.lifewire.com/reasons-to-use-xml-3471386) provides 5 reasons why XML is a good way to store data.
 
-* Simplicity
-  - The user creates the tags and the overall setup of the document.
-* Organization
-  - The user can segment the design process by creating the data page and then work on the design as appropriate.
-* Accessibility
-  - When using XML, the data and the format design is separated which, makes changes easy and time-saving since the user doens't have to wade through many lines of code to make changes like in HTML.
-* Standardization
-  - XML is an international standard and this allows users world-wide to utilize XML data.
-* Multiple Applications
-  - XML allows the user to create many different display pages with different styles and formats with one XML data page.
+* Simplicity  
+    - The user creates the tags and the overall setup of the document.
+* Organization  
+    - The user can segment the design process by creating the data page and then work on the design as appropriate.
+* Accessibility  
+    - When using XML, the data and the format design is separated which, makes changes easy and time-saving since the user doens't have to wade through many lines of code to make changes like in HTML.
+* Standardization  
+    - XML is an international standard and this allows users world-wide to utilize XML data.
+* Multiple Applications  
+    - XML allows the user to create many different display pages with different styles and formats with one XML data page.
 
-## Packages/ Functions for Reading XML Data
+# Packages/Functions for Reading XML Data
+* R package XML, xml2 are available for reading XML data files.
+* For this project, I choose package xml2. Package xml2 is similar to the XML package. The reasons that I use [xlm2](https://www.rdocumentation.org/packages/xml2/versions/1.2.0) are as follows:  
+    + xml2 takes care of memory management for us. It will automatically free the memory used by an XML document as soon as the last reference to it goes away.  
+    + xml2 supports modification and creation of XML nodes.  
+    + xml2 has a very simple class hierarchy so don’t need to think about exactly what type of object you have, xml2 will just do the right thing.  
+    + More convenient handling of namespaces in Xpath expressions, like xml_ns() and xml_ns_strip().
 
-2.Discussion of possible packages/functions that are available for reading your type of data into R. Choose one and explain why you’ve chosen it.
 
-## Description of Specific Data Set Chosen
+# Description of Specific Data Set Chosen
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
-## Read in Data Set and Data Exploration
+# Read in Data Set and Data Exploration
 
-4.The data you read in should have at least two categorical variables and two quantitative variables.
-• Read in the data set describing the options your package’s functions allow.
+## Read in the data set describing the options your package’s functions allow.
 
 ```{r}
 library(xml2)
@@ -91,25 +93,15 @@ library(DT)
 datatable(deathDF, rownames = FALSE)
 ```
 
-• Perform basic exploratory data analysis that reveals a meaningful idea that you would reasonable want to investigate further. Not all things reported need to show something meaningful (i.e. graphs that show no relationship are fine) but you should end up with a solid lead that you would pursue further.
-
-## Function Applied to Data
-
-5.At some point you should create a useful function(s) to do something meaningful with the data or customize the way you read the data in.
-
-
+# Data Analysis
+## create a useful function(s) 
 
 ## Create New Variable
-
-6.You should create a new variable.
 
 Possibly create variables of difference in average life-expectancy or death rate between sexes and/ or races?
 
 ## Contigency Tables and Numeric Summaries
 
-7.You should create some contingency tables and numeric summaries by some of your categorical variables
-
 ## Plotted Data
 
-8.You should create some plots (at least a side-by-side bar plot, side-by-side box plots, and scatter plots with coloring)
 
