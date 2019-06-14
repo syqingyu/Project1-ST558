@@ -33,12 +33,11 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
 
 # Packages/Functions for Reading XML Data
 * R package XML, xml2 are available for reading XML data files.
-* For this project, I choose package xml2. Package xml2 is similar to the XML package. The reasons that I use [xlm2](https://www.rdocumentation.org/packages/xml2/versions/1.2.0) are as follows:  
+* For this project, I choose package xml2. Actually, xml2 package is similar to the XML package, and the reasons that I use [xlm2 (from Rdocumentation)](https://www.rdocumentation.org/packages/xml2/versions/1.2.0) are as follows:  
     + xml2 takes care of memory management for us. It will automatically free the memory used by an XML document as soon as the last reference to it goes away.  
     + xml2 supports modification and creation of XML nodes.  
     + xml2 has a very simple class hierarchy so don’t need to think about exactly what type of object you have, xml2 will just do the right thing.  
     + More convenient handling of namespaces in Xpath expressions, like xml_ns() and xml_ns_strip().
-
 
 # Description of Specific Data Set Chosen
 
@@ -46,7 +45,7 @@ The XML data set chosen for this vignette was found at [Data.gov](https://catalo
 
 # Read in Data Set and Data Exploration
 
-## Read in the data set describing the options your package’s functions allow.
+## Read in XML and convert it to data frame
 
 ```{r}
 library(xml2)
@@ -93,15 +92,18 @@ library(DT)
 datatable(deathDF, rownames = FALSE)
 ```
 
+## Describe the options xml2 package’s functions allow.
+
 # Data Analysis
-## create a useful function(s) 
+## Create a useful function(s)
 
 ## Create New Variable
 
-Possibly create variables of difference in average life-expectancy or death rate between sexes and/ or races?
 
 ## Contigency Tables and Numeric Summaries
 
 ## Plotted Data
+
+
 
 
