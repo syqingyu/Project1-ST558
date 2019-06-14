@@ -47,5 +47,8 @@ for (i in 1:length(xml_list[[1]][[1]])){
   deathDF <- merge(deathDF, tmp, all = TRUE)
 }
 deathDF
+names(deathDF)<- c("Year", "Race", "Sex", "Mortality", "Life Expectancy")
+library(DT)
+datatable(deathDF, rownames = FALSE)
 ```
 
