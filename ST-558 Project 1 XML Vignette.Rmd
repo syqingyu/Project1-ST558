@@ -43,14 +43,20 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
     + xml2 has a very simple class hierarchy so don’t need to think about exactly what type of object you have, xml2 will just do the right thing.  
     + More convenient handling of namespaces in Xpath expressions, like xml_ns() and xml_ns_strip().
 
+<<<<<<< HEAD
 # Description of Specific Data Set Chosen
+=======
+>>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 
 ## Description of Specific Data Set Chosen
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
 
+<<<<<<< HEAD
 ## Read in XML and convert it to data frame
+=======
+>>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 
 ## Read in Data Set and Data Exploration
 
@@ -102,11 +108,25 @@ datatable(deathDF, rownames = FALSE)
 
 ```
 
+<<<<<<< HEAD
 ## Describe the options xml2 package’s functions allow.
 
 # Data Analysis
 
 ## Create a useful function(s)
+=======
+
+## Describe the options xml2 package’s functions allow.
+read_xlm: read xml file 
+xml_length:returns the number of children.
+xml_child: specify a specific child to return.
+xml_children: Navigate around the family tree. 
+xml_contents: returns all nodes.
+xml_parent: returns the parent node
+xml_parents: returns all parents up to the root.
+xml_siblings: returns all nodes at the same level.
+as_list: coerce xml nodes to a list.
+>>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 
 ## Data Analysis
 
@@ -142,6 +162,23 @@ plotFun(df)
 
 ## Create New Variable
 
+<<<<<<< HEAD
+=======
+```{r}
+# create a new varibale Average_life_by_year
+library(tidyverse)
+deathDF$`Life Expectancy` <- as.numeric(deathDF$`Life Expectancy`)
+deathDF1 <- deathDF %>% group_by(Year) %>% mutate(Average_life_by_year=mean(`Life Expectancy`)) %>% mutate(life_expectancy_diff=`Life Expectancy`-Average_life_by_year)
+
+# when I did the plotting part, I found I need a new categorical variable to make th plot more meaningful.
+deathDF2<-deathDF1 %>% select(everything()) %>% mutate(Age =ifelse(`Life Expectancy`<= 20,"0-20",
+                         ifelse(`Life Expectancy`<=40,"21-40",
+                                ifelse(`Life Expectancy`<=60, "41-60",
+                                       ifelse(`Life Expectancy`<=80, "61-80", 
+                                              ifelse(`Life Expectancy`>80, "older than 80", NA))))))
+```
+
+>>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 ## Contigency Tables and Numeric Summaries
 
 ### Full Table
@@ -243,3 +280,51 @@ summaryFun(df, "Male")
 
 ## Plotted Data
 
+<<<<<<< HEAD
+=======
+```{r}
+library(ggplot2)
+library(knitr)
+
+deathDF2$Mortality <- as.numeric(as.character(deathDF2$Mortality))
+deathDF2$Mortality
+
+# create a histogram to see the distribution of life expectancy
+g<- ggplot(deathDF, aes(x=`Life Expectancy`))
+g+ geom_histogram(color = "grey", fill = "red",size = 1, binwidth = 3)+
+   labs(x="Life Expectancy")
+
+# create a side by side bar plot of death rate by age for differetn races 
+g <- ggplot(data=deathDF2, aes(x=Race))
+g + geom_bar(aes(fill = as.factor(Age)), position = "dodge")+
+  labs(x= "Race")+
+  scale_fill_discrete(name = "Death rate by age")+
+  ggtitle(" Death rate by age for different races")
+
+# create a side by side bar plot of death rate for races and sex
+g <- ggplot(data=deathDF2, aes(x=Sex))
+g + geom_bar(aes(fill = as.factor(Age)), position = "dodge")+
+  labs(x= "Sex")+
+  scale_fill_discrete(name = "Death rate by age")+
+  facet_grid(~Race)+
+  scale_x_discrete(labels = c("Both Sex","F","M"))
+
+# create a side by side boxplot for races and mortality
+g <- ggplot(deathDF2, aes(x=Race, y=Mortality))
+g+geom_boxplot()+
+  ggtitle("Boxplot for Mortality")
+
+# create scatter plots with coloring for mortality and life expectancy
+deathDF2$Year<-as.numeric(as.character(deathDF2$Year))
+deathDF2$Year
+g <- ggplot(deathDF2, aes(x= Year, y=`Life Expectancy`, col=Race))
+g+ geom_point(size = 0.5, alpha = 0.6)+
+  geom_smooth(aes(group=Race), method = lm, col="black")+
+  labs(y="Life Expectancy")
+  ggtitle("Mortality vs Life Expectancy")
+```
+
+
+
+
+>>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
