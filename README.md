@@ -1,10 +1,5 @@
 # Project1
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 ## Vignettes
 Vignettes are explanations of some concept, package, etc. with text, code, and output interweaved. We
 already know how to make them with R Markdown!
