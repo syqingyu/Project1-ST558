@@ -52,10 +52,6 @@ deathDF1 <- deathDF %>% group_by(Year) %>% mutate(Average_life_by_year=mean(`Lif
 
 view(deathDF1)
 
-# create a histogram to see the distribution of life expectancy
-g<- ggplot(deathDF, aes(x=`Life Expectancy`))
-g+ geom_histogram()
-
 # when I did the plotting part, I found I need a new categorical variable to make th plot more meaningful
 deathDF2<-deathDF1 %>% select(everything()) %>% mutate(Age =ifelse(`Life Expectancy`<= 20,"0-20",
                          ifelse(`Life Expectancy`<=40,"21-40",
@@ -69,7 +65,11 @@ library(ggplot2)
 library(knitr)
 
 deathDF2$Mortality <- as.numeric(as.character(deathDF2$Mortality))
-deathDF2$Mortality
+
+# create a histogram to see the distribution of life expectancy
+g<- ggplot(deathDF, aes(x=`Life Expectancy`))
+g+ geom_histogram(color = "grey", fill = "red",size = 1, binwidth = 3)+
+  labs(x="Life Expectancy")
 
 # create a side by side bar plot of death rate by age for differetn races 
 g <- ggplot(data=deathDF2, aes(x=Race))
