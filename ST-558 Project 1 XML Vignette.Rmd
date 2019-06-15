@@ -145,6 +145,7 @@ plotFun(df)
 ```
 
 ## Create New Variable
+
 ```{r}
 # create a new varibale Average_life_by_year
 library(tidyverse)
@@ -266,6 +267,11 @@ library(knitr)
 
 deathDF2$Mortality <- as.numeric(as.character(deathDF2$Mortality))
 deathDF2$Mortality
+
+# create a histogram to see the distribution of life expectancy
+g<- ggplot(deathDF, aes(x=`Life Expectancy`))
+g+ geom_histogram(color = "grey", fill = "red",size = 1, binwidth = 3)+
+   labs(x="Life Expectancy")
 
 # create a side by side bar plot of death rate by age for differetn races 
 g <- ggplot(data=deathDF2, aes(x=Race))
