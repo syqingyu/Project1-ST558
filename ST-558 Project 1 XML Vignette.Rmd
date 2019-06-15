@@ -43,21 +43,16 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
     + xml2 has a very simple class hierarchy so don’t need to think about exactly what type of object you have, xml2 will just do the right thing.  
     + More convenient handling of namespaces in Xpath expressions, like xml_ns() and xml_ns_strip().
 
-<<<<<<< HEAD
 # Description of Specific Data Set Chosen
-=======
 
 ## Description of Specific Data Set Chosen
->>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
 
-<<<<<<< HEAD
 ## Read in XML and convert it to data frame
-=======
+
 ## Read in Data Set and Data Exploration
->>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
 ### Read in the data set describing the options your package’s functions allow.
 
@@ -107,12 +102,12 @@ datatable(deathDF, rownames = FALSE)
 
 ```
 
-<<<<<<< HEAD
 ## Describe the options xml2 package’s functions allow.
 
 # Data Analysis
+
 ## Create a useful function(s)
-=======
+
 ## Data Analysis
 
 ### Function Applied to Data
@@ -144,10 +139,8 @@ df <- deathDF
 }
 plotFun(df)
 ```
->>>>>>> 96b7bf02490b00c3b81d2c18a3ba6fce867427c1
 
 ## Create New Variable
-
 
 ## Contigency Tables and Numeric Summaries
 
@@ -249,7 +242,4 @@ summaryFun(df, "Male")
 ```
 
 ## Plotted Data
-
-
-
 
