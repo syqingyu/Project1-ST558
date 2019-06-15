@@ -9,8 +9,10 @@ date: "<center>6/3/2019</center>"
 output:
   html_document:
     toc: yes
+    toc_depth: 4
   pdf_document:
     toc: yes
+    toc_depth: 4
 ---
 
 ```{r setup, include=FALSE}
