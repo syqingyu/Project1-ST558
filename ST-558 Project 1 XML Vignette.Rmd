@@ -47,10 +47,9 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
-
 ## Read in XML and convert it to data frame
 
-```{r, warning=FALSE, echo=FALSE, message=FALSE, include=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(xml2)
 # Read in xml file  
 xml_file <- read_xml("https://data.cdc.gov/api/views/w9j2-ggv5/rows.xml?accessType=DOWNLOAD")
@@ -96,25 +95,20 @@ datatable(deathDF, rownames = FALSE)
 
 ```
 
-
 # Data Analysis
 
-## Create a useful function(s)
+## Describe the options xml2 package’s functions allow.  
+* read_xlm: read xml file  
+* xml_length:returns the number of children.  
+* xml_child: specify a specific child to return.  
+* xml_children: Navigate around the family tree.   
+* xml_contents: returns all nodes.  
+* xml_parent: returns the parent node  
+* xml_parents: returns all parents up to the root.  
+* xml_siblings: returns all nodes at the same level.  
+* as_list: coerce xml nodes to a list.  
 
-## Describe the options xml2 package’s functions allow.
-read_xlm: read xml file 
-xml_length:returns the number of children.
-xml_child: specify a specific child to return.
-xml_children: Navigate around the family tree. 
-xml_contents: returns all nodes.
-xml_parent: returns the parent node
-xml_parents: returns all parents up to the root.
-xml_siblings: returns all nodes at the same level.
-as_list: coerce xml nodes to a list.
-
-## Data Analysis
-
-### Function Applied to Data
+## Function Applied to Data
 
 The function applied to the data set plots the time series of death rate and average life expectancy for each race and sex grouping. Results show an increase in average life expectancy and a decrease of death rate over time, possibly due to improvements in medicine. Notice the high mortality and low average life expectancy spikes during the early 1900's which, could be related to high death rates during World War I and the influenza epidemic of 1918.
 
@@ -146,14 +140,14 @@ plotFun(df)
 
 ## Create New Variable
 
-```{r}
-# create a new varibale Average_life_by_year
-library(tidyverse)
-deathDF$`Life Expectancy` <- as.numeric(deathDF$`Life Expectancy`)
-deathDF1 <- deathDF %>% group_by(Year) %>% mutate(Average_life_by_year=mean(`Life Expectancy`)) %>% mutate(life_expectancy_diff=`Life Expectancy`-Average_life_by_year)
+In the original XML data file, we have 5 variables-year, Race, Sex, Mortality and Life Expectancy. Race and sex are categorical variables. Race has three categories- All Races, White and Black. Sex has three categories- Both Sexes, Female and Male. Others are basically numerical variables. Visually, we can see there are some missing values in Life Expectancy.  
 
-# when I did the plotting part, I found I need a new categorical variable to make th plot more meaningful.
-deathDF2<-deathDF1 %>% select(everything()) %>% mutate(Age =ifelse(`Life Expectancy`<= 20,"0-20",
+In order to better reveal the pattern of life expectancy among different races, genders and years, we created a new categorical variable called AgeRange. For this variable, we created 5 categories-“0-20”, “21-40”, “41-60”, “61-80”, “older than 80” based on different Life Expectancy. In this way, we can better analyze the life expectancy for different races, genders and years.
+
+```{r, warning=FALSE, message=FALSE}
+# create a new categorical variable to make th plot more meaningful.
+library(tidyverse)
+deathDF2<-deathDF %>% select(everything()) %>% mutate(AgeRange =ifelse(`Life Expectancy`<= 20,"0-20",
                          ifelse(`Life Expectancy`<=40,"21-40",
                                 ifelse(`Life Expectancy`<=60, "41-60",
                                        ifelse(`Life Expectancy`<=80, "61-80", 
@@ -172,6 +166,7 @@ knitr::kable(table(df$Race, df$Sex), caption = "Race and Sex Information")
 ```
 
 ### Numeric Summaries by Race
+
 Below are three summaries of the data set broken down by race including quantiles, mininums, maximums, and NA's. Trends show that blacks tend to have higher death rates and correspondingly lower average life expectancy than whites.
 
 ```{r, warning=FALSE, echo=FALSE, message=FALSE}
@@ -261,41 +256,83 @@ summaryFun(df, "Male")
 
 ## Plotted Data
 
-```{r,warning=FALSE, echo=FALSE, message=FALSE}
+We’d like to explore the distribution of Life Expectancy for all races and genders from 1900 to 2015. To do that, we generated 3 histogram plots for all races, female and male.
+
+The histogram of life expectancy distribution for all races shows us a skewed distribution with a long-left tail. The highest count of life expectancy is around 70.
+
+```{r, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(knitr)
 
 deathDF2$Mortality <- as.numeric(as.character(deathDF2$Mortality))
+deathDF2$`Life Expectancy` <- as.numeric(as.character(deathDF2$`Life Expectancy`))
 
-# create a histogram to see the distribution of life expectancy
-g<- ggplot(deathDF, aes(x=`Life Expectancy`))
+# create histograms to see the distribution of life expectancy for all races
+g <- ggplot(deathDF2[deathDF2$Race=="All Races" & deathDF2$Sex=="Both Sexes",], aes(x=`Life Expectancy`))
+g+ geom_histogram(color = "grey", fill = "blue",size = 1, binwidth = 3)+
+  labs(x="Life Expectancy")+
+ ggtitle("Life Expectancy Distribution for All Races")
+```
+
+The histogram of life expectancy distribution for female tells that the highest count is about 76, which is greater than the average.
+
+```{r, warning=FALSE, message=FALSE}
+# create histograms to see the distribution of life expectancy for female
+g<- ggplot(deathDF2[deathDF2$Race=="All Races" & deathDF2$Sex=="Female",], aes(x=`Life Expectancy`))
 g+ geom_histogram(color = "grey", fill = "red",size = 1, binwidth = 3)+
-   labs(x="Life Expectancy")
+   labs(x="Life Expectancy")+
+    ggtitle("Life Expectancy Distribution for Female")
+```
 
-# create a side by side bar plot of death rate by age for differetn races 
+The histogram of life expectancy distribution for male shows the highest count is about 65, which is smaller than female. 
+
+```{r, warning=FALSE, message=FALSE}
+# create histograms to see the distribution of life expectancy for male
+g<- ggplot(deathDF2[deathDF2$Race=="All Races" & deathDF2$Sex=="Male",], aes(x=`Life Expectancy`))
+g+ geom_histogram(color = "grey", fill = "yellow",size = 1, binwidth = 3)+
+   labs(x="Life Expectancy")+
+    ggtitle("Life Expectancy Distribution for Male")
+```
+
+In the following side by side bar plot of death rate by age for different races, we can find that in age range “21-40”, the death rate of black people is more than white people and the average. And in white group, the normal death age range is “61-80”. There is also a significant difference is that white has a age range-“older than 80”, which does not exist in black group.
+
+```{r, warning=FALSE, message=FALSE}
+# create a side by side bar plot of death rate by age for different races 
 g <- ggplot(data=deathDF2, aes(x=Race))
-g + geom_bar(aes(fill = as.factor(Age)), position = "dodge")+
+g + geom_bar(aes(fill = as.factor(AgeRange)), position = "dodge")+
   labs(x= "Race")+
-  scale_fill_discrete(name = "Death rate by age")+
-  ggtitle(" Death rate by age for different races")
+  scale_fill_discrete(name = "Age Range")+
+  ggtitle("Death rate by Age Range for different races")
+```
 
+The next side by side bar plot has 3 variables – Sex, Race and Death rate by Age Range. It shows similar conclusions of death rate by age and races as the first bar plot. And it offers some useful information about genders. First, through the plots we can find in black group the amount of age range “61-80” in female are more than the amount of male. Also in white group, female has “older than 80” age range, but male does not have.
+
+```{r, warning=FALSE, message=FALSE}
 # create a side by side bar plot of death rate for races and sex
 g <- ggplot(data=deathDF2, aes(x=Sex))
-g + geom_bar(aes(fill = as.factor(Age)), position = "dodge")+
+g + geom_bar(aes(fill = as.factor(AgeRange)), position = "dodge")+
   labs(x= "Sex")+
-  scale_fill_discrete(name = "Death rate by age")+
+  scale_fill_discrete(name = "Death rate by Age Range")+
   facet_grid(~Race)+
   scale_x_discrete(labels = c("Both Sex","F","M"))
+```
 
+The boxplot for mortality provides that the median of mortality (every 100,000) in black is larger than white and the average from 1900 to 2015. The highest value of black is almost 4000, while the highest value of white is around 2600.
+
+```{r, warning=FALSE, message=FALSE}
 # create a side by side boxplot for races and mortality
 g <- ggplot(deathDF2, aes(x=Race, y=Mortality))
 g+geom_boxplot()+
+  geom_point(aes(col=Race), position = "jitter")
   ggtitle("Boxplot for Mortality")
+```
 
+From the Life Expectancy variation scatter plot, we discover that from past 100 years the life expectancy increases significantly, especially for black. Visually, from 1900-1950, the life expectancy of black increased from 30 years old to 60 dramatically. After 1950, the growth rate of life expectancy is similar for black and white.  
+
+```{r, warning=FALSE, message=FALSE}
 # create scatter plots with coloring for mortality and life expectancy
 deathDF2$Year<-as.numeric(as.character(deathDF2$Year))
 g <- ggplot(deathDF2, aes(x= Year, y=`Life Expectancy`, col=Race))
 g+ geom_point(size = 0.5, alpha = 0.6)+
-  geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Mortality vs Life Expectancy")
+  geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Life Expectancy ariation from 1900 to 2015")
 ```
-
