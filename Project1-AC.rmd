@@ -1,10 +1,6 @@
 ---
 title: "<center> Project I </center>"
-<<<<<<< HEAD
-author: "<center>Avisek Choudhury</center>"
-=======
 author: "<center>Avisek Choudhury</center><center>Pierre Cobb</center>"
->>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
 date: "<center>6/3/2019</center>"
 output:
   html_document:
@@ -18,29 +14,31 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # General Description of JSON File
 
-JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSOON is becoming more and more popular these days as it's compact, lightweight and easy to use. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.
+JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSON is becoming more and more popular these days as it's compact, lightweight and easy to use. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.
 
 # Description of the Data Set Chosen
 
 There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut. A "Y" value under the different substance columns indicates that particular substance was detected. Data are derived from an investigation by the Office of the Chief Medical Examiner which includes the toxicity report, death certificate, as well as a scene investigation. <br>
-The dataset contains 5105 rows and 42 columns and each row is a Death. The data captures Date of the incident, Sex, Race, Age, Location Data, Resposible Drug, Cause of Death, Opiod or Not etc.
+The dataset contains 5,105 rows and 42 columns and each row is a Death. The data captures Date of the incident, Sex, Race, Age, Location Data, Resposible Drug, Cause of Death, Opiod or Not etc.
 
 # Reading JSON File
 
 ### Download and Examine the JSON file
 
-After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
+After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox (**Maybe you could explain what the firefox is). The JSON has a metadata portion along with the data segment.
 
 ```{r JSON PIC1, out.width = "400px", echo=FALSE}
 knitr::include_graphics("./files/JSON1.jpg")
 ```
 ```{r JSON PIC2, out.width = "400px", echo=FALSE}
 knitr::include_graphics("./files/JSON2.jpg")
+
+# These images are a little hard to understand
 ```
 <br><br>
 We have used the `jsonlite` package to read in the JSON file. 
 
-```{r readJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+```{r readJSON1, echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
 library(jsonlite)
 library(tidyverse)
 library(gdata)
@@ -152,7 +150,7 @@ Below table summarises the age category frequency summary from year 2012 to 2018
 #Age Category Frequency
 datatable(enframe(table(factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))), options = list(dom ="t"), caption = "Age Category Frequency", rownames = FALSE)
 ```
-Let's break down the the age catory frequency by each year now from 2012 to 2018. Though we don't see any significan't change in the no of incidents involving minors but rest of the age categories show a steady rise in the no of accidents involving drug overdose.
+Let's break down the the age catory frequency by each year now from 2012 to 2018. Though we don't see any significan't change in the number of incidents involving minors but rest of the age categories show a steady rise in the number of accidents involving drug overdose.
 
 ```{r summData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 #Year Vs Age Category Frequency
@@ -164,13 +162,12 @@ sexAgeTable <- table(drugOverDoseTD$Sex, factor(drugOverDoseTD$Age_Category, lev
 #Print the table
 datatable(as.data.frame.matrix(sexAgeTable), options = list(dom ="t"), caption = "Sex Vs Age Category table")
 
-<<<<<<< HEAD
-```
-=======
 datatable(drugOverDoseTD %>% group_by(Race, Sex) %>% summarise(Count = n(), Mean_Age = round(mean(Age, na.rm = TRUE), 2)) %>% drop_na() %>% arrange(Mean_Age), options = list(dom ="t"), caption = "Race - Sex - Age Summary", rownames = FALSE)
 ```
 
 ### Visualise data
+
+May want to add more text above graphs to understand what is being shown and why. ALso, the last graph has two categories but only one line.
 
 ```{r visData1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 library(ggplot2)
@@ -234,4 +231,3 @@ g + geom_line(aes(color = AnyOpioid), lwd =1.5) + labs(title = "Opioid Related D
 ```
 
 
->>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
