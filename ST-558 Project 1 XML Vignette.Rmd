@@ -8,7 +8,6 @@ output:
     smooth_scroll: true
 ---
 
-
 # Vignette Content Details
 
 ```{r setup, include=FALSE}
@@ -51,6 +50,7 @@ The XML data set chosen for this vignette was found at [Data.gov](https://catalo
 
 ```{r, warning=FALSE, message=FALSE}
 library(xml2)
+library(tidyverse)
 # Read in xml file  
 xml_file <- read_xml("https://data.cdc.gov/api/views/w9j2-ggv5/rows.xml?accessType=DOWNLOAD")
 
@@ -78,8 +78,10 @@ length(xml_list)
 length(xml_list[[1]])
 length(xml_list[[1]][[1]])
 length(xml_list[[1]][[1]][[2]])
+```
 
-# For-loop to combine list to a dataframe
+Use for-loop to combine list to a dataframe.
+```{r, warning=FALSE, message=FALSE}
 deathDF <- data.frame(matrix(ncol = ncols, nrow = 0))
 colnames(deathDF) <- names(xml_list[[1]][[1]][[ind_name]])
 for (i in 1:length(xml_list[[1]][[1]])){
@@ -87,12 +89,17 @@ for (i in 1:length(xml_list[[1]][[1]])){
   colnames(tmp) <- names(xml_list[[1]][[1]][[i]])
   deathDF <- merge(deathDF, tmp, all = TRUE)
 }
+```
 
-# create a table for deathDF
+Create a table for deathDF
+
+```{r, warning=FALSE, message=FALSE}
 names(deathDF)<- c("Year", "Race", "Sex", "Mortality", "Life Expectancy")
 library(DT)
-datatable(deathDF, rownames = FALSE)
-
+deathDF1 <- deathDF %>% arrange(desc(Year))
+datatable(deathDF1, rownames = FALSE, options = list(
+ columnDefs = list(list(className = 'dt-center', targets = 0:4))
+))
 ```
 
 # Data Analysis
