@@ -293,4 +293,3 @@ g<- ggplot(data = drugOpioid, aes(x = Year, y = OpioidRelatedDeath))
 g + geom_line(aes(color = AnyOpioid), lwd =1.5) + labs(title = "Opioid Related Death from 2015-2018 ")
 ```
 
-
