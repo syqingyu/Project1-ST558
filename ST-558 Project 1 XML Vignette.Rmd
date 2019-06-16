@@ -46,10 +46,6 @@ According to [TechTarget](https://searchmicroservices.techtarget.com/definition/
 
 The XML data set chosen for this vignette was found at [Data.gov](https://catalog.data.gov/dataset/age-adjusted-death-rates-and-life-expectancy-at-birth-all-races-both-sexes-united-sta-1900). This data provides mortality trends in the U.S. since 1900 and it emphasizes the difference in  life-expectancy at birth and age-adjusted death rates by race and sex. This data is derived from census data.The categorical variables consist of year, race, and sex. The Quantitative variables are life-expectancy (in year) and age-adjusted death rate.
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 ## Read in XML and convert it to data frame
 
 ```{r, warning=FALSE, message=FALSE}
@@ -84,7 +80,8 @@ length(xml_list[[1]][[1]])
 length(xml_list[[1]][[1]][[2]])
 ```
 
-Use for-loop to combine list to a dataframe.
+Use for-loop to combine list to a dataframe
+
 ```{r, warning=FALSE, message=FALSE}
 deathDF <- data.frame(matrix(ncol = ncols, nrow = 0))
 colnames(deathDF) <- names(xml_list[[1]][[1]][[ind_name]])
@@ -106,44 +103,22 @@ datatable(deathDF1, rownames = FALSE, options = list(
 ))
 ```
 
-<<<<<<< HEAD
-
-# Data Analysis
-
-## Create a useful function(s)
-
 ## Describe the options xml2 package’s functions allow.
-read_xlm: read xml file 
-xml_length:returns the number of children.
-xml_child: specify a specific child to return.
-xml_children: Navigate around the family tree. 
-xml_contents: returns all nodes.
-xml_parent: returns the parent node
-xml_parents: returns all parents up to the root.
-xml_siblings: returns all nodes at the same level.
-as_list: coerce xml nodes to a list.
-
-## Data Analysis
-=======
-# Data Analysis
-
-## Describe the options xml2 package’s functions allow.  
-* read_xlm: read xml file  
-* xml_length:returns the number of children.  
-* xml_child: specify a specific child to return.  
-* xml_children: Navigate around the family tree.   
-* xml_contents: returns all nodes.  
-* xml_parent: returns the parent node  
-* xml_parents: returns all parents up to the root.  
-* xml_siblings: returns all nodes at the same level.  
-* as_list: coerce xml nodes to a list.  
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
+* read_xlm: read xml file 
+* xml_length:returns the number of children.
+* xml_child: specify a specific child to return.
+* xml_children: Navigate around the family tree. 
+* xml_contents: returns all nodes.
+* xml_parent: returns the parent node
+* xml_parents: returns all parents up to the root.
+* xml_siblings: returns all nodes at the same level.
+* as_list: coerce xml nodes to a list.
 
 ## Function Applied to Data
 
 The function applied to the data set plots the time series of death rate and average life expectancy for each race and sex grouping. Results show an increase in average life expectancy and a decrease of death rate over time, possibly due to improvements in medicine. Notice the high mortality and low average life expectancy spikes during the early 1900's which, could be related to high death rates during World War I and the influenza epidemic of 1918.
 
-```{r, plot_function ,echo=FALSE, message=FALSE, results='hide'}
+```{r, plot_function, message=FALSE, results='hide'}
 library(tidyverse)
 library(ggplot2)
 df <- deathDF
@@ -171,17 +146,16 @@ plotFun(df)
 
 ## Create New Variable
 
-<<<<<<< HEAD
 ```{r}
 # create a new varibale Average_life_by_year
 library(tidyverse)
 deathDF$`Life Expectancy` <- as.numeric(deathDF$`Life Expectancy`)
 deathDF1 <- deathDF %>% group_by(Year) %>% mutate(Average_life_by_year=mean(`Life Expectancy`)) %>% mutate(life_expectancy_diff=`Life Expectancy`-Average_life_by_year)
-=======
+```
+
 In the original XML data file, we have 5 variables-year, Race, Sex, Mortality and Life Expectancy. Race and sex are categorical variables. Race has three categories- All Races, White and Black. Sex has three categories- Both Sexes, Female and Male. Others are basically numerical variables. Visually, we can see there are some missing values in Life Expectancy.  
 
 In order to better reveal the pattern of life expectancy among different races, genders and years, we created a new categorical variable called AgeRange. For this variable, we created 5 categories-“0-20”, “21-40”, “41-60”, “61-80”, “older than 80” based on different Life Expectancy. In this way, we can better analyze the life expectancy for different races, genders and years.
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 
 ```{r, warning=FALSE, message=FALSE}
 # create a new categorical variable to make th plot more meaningful.
@@ -199,7 +173,7 @@ deathDF2<-deathDF %>% select(everything()) %>% mutate(AgeRange =ifelse(`Life Exp
 
 The conitigency table below shows that the data for each race and sex have equal counts of estimates.
 
-```{r, race_sex_contigency_table, warning=FALSE, echo=FALSE}
+```{r, race_sex_contigency_table, warning=FALSE}
 # Create a 2-D contigency table
 knitr::kable(table(df$Race, df$Sex), caption = "Race and Sex Information")
 ```
@@ -208,7 +182,7 @@ knitr::kable(table(df$Race, df$Sex), caption = "Race and Sex Information")
 
 Below are three summaries of the data set broken down by race including quantiles, mininums, maximums, and NA's. Trends show that blacks tend to have higher death rates and correspondingly lower average life expectancy than whites.
 
-```{r, warning=FALSE, echo=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 # Create a function to summarise data into tables by race
 summaryFun <- function(df, race){
   library(tidyverse)
@@ -250,9 +224,10 @@ summaryFun(df, "White")
 ```
 
 ### Numeric Summaries by Sex
+
 Below are three summaries of the data set broken down by sex including quantiles, mininums, maximums, and NA's.The results show that males tend to have higher death rates and correspondingly lower average life expectancy than females.
 
-```{r, warning=FALSE, echo=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 # Create a function to summarise data into tables by sex
 summaryFun <- function(df, sex){
   library(tidyverse)
@@ -295,23 +270,16 @@ summaryFun(df, "Male")
 
 ## Plotted Data
 
-<<<<<<< HEAD
-```{r,warning=FALSE, echo=FALSE, message=FALSE}
-=======
 We’d like to explore the distribution of Life Expectancy for all races and genders from 1900 to 2015. To do that, we generated 3 histogram plots for all races, female and male.
 
 The histogram of life expectancy distribution for all races shows us a skewed distribution with a long-left tail. The highest count of life expectancy is around 70.
 
-```{r, warning=FALSE, message=FALSE}
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
+```{r,warning=FALSE, message=FALSE}
 library(ggplot2)
 library(knitr)
 
 deathDF2$Mortality <- as.numeric(as.character(deathDF2$Mortality))
-<<<<<<< HEAD
-=======
 deathDF2$`Life Expectancy` <- as.numeric(as.character(deathDF2$`Life Expectancy`))
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 
 # create histograms to see the distribution of life expectancy for all races
 g <- ggplot(deathDF2[deathDF2$Race=="All Races" & deathDF2$Sex=="Both Sexes",], aes(x=`Life Expectancy`))
@@ -379,12 +347,5 @@ From the Life Expectancy variation scatter plot, we discover that from past 100 
 # create scatter plots with coloring for mortality and life expectancy
 deathDF2$Year<-as.numeric(as.character(deathDF2$Year))
 g <- ggplot(deathDF2, aes(x= Year, y=`Life Expectancy`, col=Race))
-g+ geom_point(size = 0.5, alpha = 0.6)+
-<<<<<<< HEAD
-  geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Mortality vs Life Expectancy")
+g+ geom_point(size = 0.5, alpha = 0.6)+ geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Mortality vs Life Expectancy")
 ```
-
-=======
-  geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Life Expectancy ariation from 1900 to 2015")
-```
->>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
