@@ -61,6 +61,7 @@ The dataset contains 5105 rows and 42 columns and each row is a Death. The data 
 
 We have used jsonlite package to read JSON data. The package offers ﬂexible, robust, high performance tools for working with JSON in R and is particularly powerful for building pipelines and interacting with a web API. It reads JSON data and converts it to a R data type usually List or Data Frame which can be used for data manipulation and further computation. This is ideal for interacting with web APIs, or to build pipelines where data structures seamlessly flow in and out of R using JSON. The most useful functions are ` fromJSON() ` and `toJSON()`.
 
+
 # Reading JSON File
 
 ### Download and Examine the JSON file
