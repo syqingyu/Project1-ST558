@@ -1,6 +1,6 @@
 ---
 title: "<center> Project I </center>"
-author: "<center>Avisek Choudhury</center>"
+author: "<center>Avisek Choudhury</center><center>Pierre Cobb</center>"
 date: "<center>6/3/2019</center>"
 output:
   html_document:
@@ -12,29 +12,39 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# JSON File
+# General Description of JSON File
 
-There are several JSON data sources are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut.
+JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSON is becoming more and more popular these days as it's compact, lightweight and easy to use. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.
+
+# Description of the Data Set Chosen
+
+There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut. A "Y" value under the different substance columns indicates that particular substance was detected. Data are derived from an investigation by the Office of the Chief Medical Examiner which includes the toxicity report, death certificate, as well as a scene investigation. <br>
+The dataset contains 5,105 rows and 42 columns and each row is a Death. The data captures Date of the incident, Sex, Race, Age, Location Data, Resposible Drug, Cause of Death, Opiod or Not etc.
 
 # Reading JSON File
 
 ### Download and Examine the JSON file
 
-After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
+After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox (**Maybe you could explain what the firefox is). The JSON has a metadata portion along with the data segment.
 
-```{r Horseshoe Crabs, out.width = "400px", echo=FALSE}
-knitr::include_graphics("C:/Users/Avisek/Downloads/ST558/Project1/JSON1.jpg")
+```{r JSON PIC1, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON1.jpg")
 ```
-<br>
+```{r JSON PIC2, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON2.jpg")
+
+# These images are a little hard to understand
+```
+<br><br>
 We have used the `jsonlite` package to read in the JSON file. 
 
-```{r readJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+```{r readJSON1, echo=FALSE, message=FALSE, warning=FALSE, error=TRUE}
 library(jsonlite)
 library(tidyverse)
 library(gdata)
 library(ggplot2)
 
-myJSON <- fromJSON("C:/Users/Avisek/Downloads/ST558/DrugOverdose.json")
+myJSON <- fromJSON("./files/DrugOverdose.json")
 class(myJSON)
 ```
 Let's examine the structure and attibutes a bit further.
@@ -53,4 +63,171 @@ colNames <-myJSON[['meta']][['view']][['columns']]
 colNames<- colNames[c(9:50),2]
 colNames
 ```
+
+### Extract the Data Portion
+
+Let's examine the data segment of the JSON file in the JSON editor/browser.
+
+```{r JSON PIC3, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON3.jpg")
+```
+<br><br>
+We can see the data portion of the JSON file is a nested list and let's make sure the length of the top list matches the no of rows we have from the source page.
+
+```{r readJSON4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+myData <- myJSON[['data']]
+length(myData)
+```
+### Generate Data Frame from JSON
+
+This custom function reads the list data and convert that to a data frame and tibble. The DeathCityGeo, ResidenceCityGeo and InjuryCityGeo are nested list. The function reads the lattitude and longtitude from those nested lists.
+
+```{r readJSON5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+collectData<-function(var){
+  sapply(myData, function(x) returnData(x, var)) 
+}
+
+returnData<-function(x, var){
+  if(length(x[[var]]) > 1){
+    return(trim(paste(x[[var]][[2]], x[[var]][[3]], sep = ",")))
+  }
+  else{
+    if(!is.null( x[[var]])){
+    return( trim(x[[var]]))
+  }else{
+    return(NA)
+  }
+  }
+}
+
+drugDF<-data.frame(sapply(9:50, collectData), stringsAsFactors=FALSE)
+
+drugOverDoseTD <- tbl_df(drugDF)
+colnames(drugOverDoseTD) <- colNames
+drugOverDoseTD
+```
+Convert the Age and Town Index to numeric and the date column to date type.
+
+```{r convertJSON1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+drugOverDoseTD['Age'] <- as.numeric(drugOverDoseTD$Age)
+drugOverDoseTD['Town Index'] <- as.numeric(drugOverDoseTD$`Town Index`)
+drugOverDoseTD['Date'] <- as.Date(drugOverDoseTD$Date)
+```
+
+# Create New Variables
+
+We have the Date and DateType column which has  DateReported/DateofDeath. We can extract the Year from the date which can help us to summarize data by year if needed. Also we have another quantative column Age; and we can use that to create a categorical variable which may be usuful to analyze the affected ages.
+
+```{r createVar1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+library(lubridate)
+
+#Create the Year Variable
+drugOverDoseTD['Year'] <- year(drugOverDoseTD$Date)
+
+#Create Age Category Variable 
+drugOverDoseTD<- drugOverDoseTD %>% mutate(Age_Category = ifelse(Age < 18, 'Minor', ifelse(Age > 18 & Age <= 25, 'Age 18 to 25', ifelse(Age > 25 & Age <= 35, 'Age 26 to 35', ifelse(Age > 35 & Age <= 45, 'Age 36 to 45', ifelse(Age > 46 & Age <= 55, 'Age 46 to 55', ifelse(Age > 55 & Age <= 65, 'Age 56 to 65', 'More than 65')))))))
+
+#Verify the results
+head(drugOverDoseTD[, 43:44], n=10)
+```
+
+# Data Analysis
+
+### Summarise data
+
+Below table shows the summary of the reported ages. We can see the affected ages in a range as low as 14 and as high as 87 and the mean & median both are at around 42.
+
+```{r summData1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+library(knitr)
+library(DT)
+
+#Age Summary
+datatable(enframe(round(summary(drugOverDoseTD$Age, na.rm = TRUE),2)), options = list(dom ="t"), caption = "Age Summary", rownames = FALSE)
+```
+Below table summarises the age category frequency summary from year 2012 to 2018 in 7 different levels. We can see there are 13 incidents involving Minors. Majority of the affected population are between age 26 to age 55.
+
+```{r summData2, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+#Age Category Frequency
+datatable(enframe(table(factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))), options = list(dom ="t"), caption = "Age Category Frequency", rownames = FALSE)
+```
+Let's break down the the age catory frequency by each year now from 2012 to 2018. Though we don't see any significan't change in the number of incidents involving minors but rest of the age categories show a steady rise in the number of accidents involving drug overdose.
+
+```{r summData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+#Year Vs Age Category Frequency
+datatable(as.data.frame.matrix(table(drugOverDoseTD$Year, factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))), options = list(dom ="t"), caption = "Year Vs Age category Frequency")
+
+#create the Sex Vs Age category table
+sexAgeTable <- table(drugOverDoseTD$Sex, factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))
+
+#Print the table
+datatable(as.data.frame.matrix(sexAgeTable), options = list(dom ="t"), caption = "Sex Vs Age Category table")
+
+datatable(drugOverDoseTD %>% group_by(Race, Sex) %>% summarise(Count = n(), Mean_Age = round(mean(Age, na.rm = TRUE), 2)) %>% drop_na() %>% arrange(Mean_Age), options = list(dom ="t"), caption = "Race - Sex - Age Summary", rownames = FALSE)
+```
+
+### Visualise data
+
+May want to add more text above graphs to understand what is being shown and why. ALso, the last graph has two categories but only one line.
+
+```{r visData1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+library(ggplot2)
+
+#Plot Incident Count for each Year
+g<- ggplot(data = drugOverDoseTD , aes(x = Year))
+g+geom_bar(color = "blue", fill="light blue") + labs(title = "No. of Incidents Every Year")
+
+#Plot Different Drug Vs Overdose Count
+drugCount <- apply(X= select(drugOverDoseTD, Heroin:OpiateNOS), MARGIN = 2, FUN = function(y) { 
+     temp <- length(y[!is.na(y)])
+      names(temp) <- "Overdose Counts"
+      temp
+       })
+drugCount<- tibble::enframe(drugCount)
+names(drugCount) <- c("Drug", "No. Of Incidents")
+
+p<-ggplot(data=drugCount, aes(x=Drug, y= `No. Of Incidents`)) +
+  geom_bar(stat="identity", color = "black", fill = "grey") + theme(axis.text.x = element_text(angle = 45)) + coord_flip() + labs(title = "No. of Incidents by Each Drug")
+  
+p
+
+```
+```{r visData2, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+
+#Plot Different Drug Vs Overdose Count for each Year
+#Take Year and the different drugs
+drugYearCount<- drugOverDoseTD[, c(43, 21:36)]
+#Make it a long Tidy Data Set
+drugYearCount<- drugYearCount %>% gather(key = Drug, value = 'Y/N', 2:17)
+#Remove NAs
+drugYearCount<- drugYearCount[complete.cases(drugYearCount) , ]
+#make tibble
+drugYearCount <- tbl_df(as.data.frame(drugYearCount %>% group_by(Year, Drug) %>% summarise(Count = n())))
+
+#Verify the data
+datatable(drugYearCount, options = list(dom ="t"), caption = "Year and Drug", rownames = FALSE)
+
+g<- ggplot(data = drugYearCount, aes(x = Year, y = Count))
+g + geom_line(aes(color = Drug, alpha = 0.5), lwd =1.5) + labs(title = "No. of Incidents by Each Drug from 2012-2018 ")
+
+```
+```{r visData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+#Plot Year with Age and Sex
+g<- ggplot(data = drugOverDoseTD, aes(x = Age, fill = Sex))
+g + geom_bar()
+
+# Year and Sex Line plot
+drugYearSexCount <- as.data.frame(drugOverDoseTD %>% group_by(Year, Sex) %>% summarise(Count = n()))
+drugYearSexCount<- drugYearSexCount[complete.cases(drugYearSexCount) & trim(drugYearSexCount$Sex) != 'Unknown', ]
+
+g<- ggplot(data = drugYearSexCount, aes(x = Year, y = Count))
+g + geom_line(aes(color = Sex), lwd =1.5)
+```
+
+```{r visData4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+drugOpioid <- drugOverDoseTD %>% group_by(Year, AnyOpioid) %>% summarise(OpioidRelatedDeath = n()) %>% drop_na()
+
+g<- ggplot(data = drugOpioid, aes(x = Year, y = OpioidRelatedDeath))
+g + geom_line(aes(color = AnyOpioid), lwd =1.5) + labs(title = "Opioid Related Death from 2015-2018 ")
+```
+
 
