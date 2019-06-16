@@ -1,7 +1,10 @@
 ---
 title: "<center> Project I </center>"
 author: "<center>Avisek Choudhury</center><center>Pierre Cobb</center>"
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 date: "<center>6/3/2019</center>"
 output:
   html_document:
@@ -17,12 +20,53 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 # General Description of JSON File
 
-JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSOON is becoming more and more popular these days as it's compact, lightweight and easy to use. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.
+JSON [Java Script Object Notation] and XML [eXtensible Markup Language] are both popular choices to exchange data between 2 systems over the interenet or in general. JSON is easy for machines to parse and generate. It is based on a subset of the JavaScript Programming Language. JSON is a text format that is completely language independent but uses conventions that are familiar to programmers of the C-family of languages, including C, C++, C#, Java, JavaScript, Perl, Python, and many others. These properties make JSON an ideal data-interchange language. JSON is becoming more and more popular these days as it's compact, lightweight and easy to use and easy for humans to read and write. JSON uses a map data structure rather than XML's tree. In some situations, key/value pairs can limit what you can do, but you get a predictable and easy-to-understand data model.<br>
+
+JSON is built on two structures:
+
+* A collection of name/value pairs. In various languages, this is realized as an object, record, struct, dictionary, hash table, keyed list, or associative array  
+* An ordered list of values. In most languages, this is realized as an array, vector, list, or sequence  
+
+<br> These are universal data structures. Virtually all modern programming languages support them in one form or another. It makes sense that a data format that is interchangeable with programming languages also be based on these structures.<br>
+
+In JSON, they take on these forms:
+
+An object is an unordered set of name/value pairs. An object begins with `{`left brace and ends with `}` right brace. Each name is followed by :colon and the name/value pairs are separated by ,comma.<br>
+
+```{r JSON DESC1, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON_DESC1.gif")
+```
+<br> An array is an ordered collection of values. An array begins with [left bracket and ends with ]right bracket. Values are separated by ,comma.
+
+```{r JSON DESC2, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON_DESC2.gif")
+```
+<br>A value can be a string in double quotes, or a number, or true or false or null, or an object or an array. These structures can be nested.
+
+```{r JSON DESC3, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON_DESC3.gif")
+```
+<br> A string is a sequence of zero or more Unicode characters, wrapped in double quotes, using backslash escapes. A character is represented as a single character string. A string is very much like a C or Java string.
+
+```{r JSON DESC4, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON_DESC4.gif")
+```
+<br>A number is very much like a C or Java number, except that the octal and hexadecimal formats are not used.
+
+```{r JSON DESC5, out.width = "400px", echo=FALSE}
+knitr::include_graphics("./files/JSON_DESC5.gif")
+```
+<br><br> Ref for Image/Text: <a href="https://www.json.org/"> JSON ORG </a>
 
 # Description of the Data Set Chosen
 
 There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut. A "Y" value under the different substance columns indicates that particular substance was detected. Data are derived from an investigation by the Office of the Chief Medical Examiner which includes the toxicity report, death certificate, as well as a scene investigation. <br>
 The dataset contains 5105 rows and 42 columns and each row is a Death. The data captures Date of the incident, Sex, Race, Age, Location Data, Resposible Drug, Cause of Death, Opiod or Not etc.
+
+# Packages for Reading JSON Data
+
+We have used jsonlite package to read JSON data. The package offers ﬂexible, robust, high performance tools for working with JSON in R and is particularly powerful for building pipelines and interacting with a web API. It reads JSON data and converts it to a R data type usually List or Data Frame which can be used for data manipulation and further computation. This is ideal for interacting with web APIs, or to build pipelines where data structures seamlessly flow in and out of R using JSON. The most useful functions are ` fromJSON() ` and `toJSON()`.
+
 
 # Reading JSON File
 
@@ -93,6 +137,7 @@ length(myData)
 This custom function reads the list data and convert that to a data frame and tibble. The DeathCityGeo, ResidenceCityGeo and InjuryCityGeo are nested list. The function reads the lattitude and longtitude from those nested lists.
 
 ```{r readJSON5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+#Custom function to extract data
 collectData<-function(var){
   sapply(myData, function(x) returnData(x, var)) 
 }
@@ -115,6 +160,7 @@ drugDF<-data.frame(sapply(9:50, collectData), stringsAsFactors=FALSE)
 drugOverDoseTD <- tbl_df(drugDF)
 colnames(drugOverDoseTD) <- colNames
 drugOverDoseTD
+
 ```
 Convert the Age and Town Index to numeric and the date column to date type.
 
@@ -171,14 +217,25 @@ Let's break down the the age catory frequency by each year now from 2012 to 2018
 ```{r summData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 #Year Vs Age Category Frequency
 datatable(as.data.frame.matrix(table(drugOverDoseTD$Year, factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))), options = list(dom ="t"), caption = "Year Vs Age category Frequency")
+```
+Below table summarises Sex Vs Age category table. It shows no of accidents for each age category in each sex combining all year data from 2012 to 2018. We see for female  the age category 46 to 55 has the highest count whereas man as the highest for 26 to 35.
 
+```{r summData4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 #create the Sex Vs Age category table
 sexAgeTable <- table(drugOverDoseTD$Sex, factor(drugOverDoseTD$Age_Category, levels = c("Minor",  "Age 18 to 25", "Age 26 to 35", "Age 36 to 45", "Age 46 to 55", "Age 56 to 65", "More than 65")))
 
 #Print the table
 datatable(as.data.frame.matrix(sexAgeTable), options = list(dom ="t"), caption = "Sex Vs Age Category table")
+<<<<<<< HEAD
+=======
+```
+This is a 3 way table between Race, Sex and Age variables. It displays count and mean age for each Race and Sex.
+
+```{r summData5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 
 datatable(drugOverDoseTD %>% group_by(Race, Sex) %>% summarise(Count = n(), Mean_Age = round(mean(Age, na.rm = TRUE), 2)) %>% drop_na() %>% arrange(Mean_Age), options = list(dom ="t"), caption = "Race - Sex - Age Summary", rownames = FALSE)
+
 ```
 
 #### Average Age Summary
@@ -214,9 +271,13 @@ kable(sexyear)
 
 ### Visualise data
 
+<<<<<<< HEAD
 #### Drug Counts 
 
 Below includes two bar graphs and a table that descibe the relationships between the type of drug, the number of incidents with that drug, and the years from 2012-2018. From the first bar graph, we can see that the 2017 had the largest number of incidents. In the second bar graph and the data table we observe Heroin has the highest number of incidents at 2529 incidents. 
+=======
+Let's start visualising no of accidents per year from 2012 to 2018. We see a clear incresing trend from 2012 to 2017 and a slight decrease in 2018.
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 
 ```{r visData1, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 library(ggplot2)
@@ -224,6 +285,12 @@ library(ggplot2)
 #Plot Incident Count for each Year
 g<- ggplot(data = drugOverDoseTD , aes(x = Year))
 g+geom_bar(color = "blue", fill="light blue") + labs(title = "No. of Incidents Every Year")
+
+```
+
+This bar plot display the no of accidents for each drug combining all years. It is clear Heroin is most responsible followed by Fentanyl for Accidental Drug Related Deaths from 2012 to 2018.
+
+```{r visData2, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 
 #Plot Different Drug Vs Overdose Count
 drugCount <- apply(X= select(drugOverDoseTD, Heroin:OpiateNOS), MARGIN = 2, FUN = function(y) { 
@@ -241,12 +308,18 @@ p
 
 ```
 
+<<<<<<< HEAD
 #### Drug Counts by Year
 
 From this output we can see the change from 2012-2018 of each drug and its number of incidents. We see that Fentanyl had a large increase from 2015 to 2018. It also appears that hydrocodone started to decline in the latter years. 
 
 
 ```{r visData2, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+=======
+This line plot displays No. of Incidents by Each Drug from 2012-2018. We can see couple of drugs are same over the years but most of them have increased. Specially there is a spike in increase for Fentanyl. Heroine has increased from 2012 to 2016 but it declined steadily in 2017 and 2018.
+
+```{r visData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 
 #Plot Different Drug Vs Overdose Count for each Year
 #Take Year and the different drugs
@@ -266,14 +339,26 @@ g + geom_line(aes(color = Drug, alpha = 0.5), lwd =1.5) + labs(title = "No. of I
 
 ```
 
+<<<<<<< HEAD
 #### Drug Counts by Sex
 
 From this data, in the bar plot we can see that the number of male incidents is substantially higher than the number of female incidents. In the line graph, we can see a large increase in the number of male incidents and a smaller increase in the number of female incidents.
 
 ```{r visData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+=======
+This barplot shows the distribution of ages combining all years. 
+
+```{r visData4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 #Plot Year with Age and Sex
-g<- ggplot(data = drugOverDoseTD, aes(x = Age, fill = Sex))
-g + geom_bar()
+g<- ggplot(data = drugOverDoseTD %>% select(Age, Sex) %>% drop_na() %>% filter(Sex != 'Unknown'), aes(x = Age, fill = Sex))
+g + geom_bar() 
+
+```
+
+This line plot displays the no of incidents over the year for both sex Male and Female. For female the incidents has a steady rise from 2012 to 2017 and a slight decrease in 2018. For male it also has a steady rise from 2012 to 2014 but has a sharp rise from 2014 to 2017 and stabilizes in 2018.
+
+```{r visData5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 
 # Year and Sex Line plot
 drugYearSexCount <- as.data.frame(drugOverDoseTD %>% group_by(Year, Sex) %>% summarise(Count = n()))
@@ -283,16 +368,20 @@ g<- ggplot(data = drugYearSexCount, aes(x = Year, y = Count))
 g + geom_line(aes(color = Sex), lwd =1.5)
 ```
 
+<<<<<<< HEAD
 #### Change in Opiod Related Deaths
 
 Our last graph demonstrates that there has been a climb in the number of opiod related deaths from 2015 to 2018. 
 
 ```{r visData4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+=======
+The dataset also captures whether the drug responsible is opioid or not and we don't have this data before 2015. The line plot clearly shows we have a steep and steady rise from 2015 to 2016 and 2016 to 2016 respectively.
+
+```{r visData6, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
+>>>>>>> 3d1dd3985d4bc8ee495b4e04e385baa0c2a4ac87
 drugOpioid <- drugOverDoseTD %>% group_by(Year, AnyOpioid) %>% summarise(OpioidRelatedDeath = n()) %>% drop_na()
 
 g<- ggplot(data = drugOpioid, aes(x = Year, y = OpioidRelatedDeath))
 g + geom_line(aes(color = AnyOpioid), lwd =1.5) + labs(title = "Opioid Related Death from 2015-2018 ")
 ```
 
-
->>>>>>> 7eeac47dfd3a31c81401cebd6a632180d53d90e1
