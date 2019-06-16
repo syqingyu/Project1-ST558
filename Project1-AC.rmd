@@ -242,6 +242,7 @@ p
 
 ```
 
+This line plot displays No. of Incidents by Each Drug from 2012-2018. We can see couple of drugs are same over the years but most of them have increased. Specially there is a spike in increase for Fentanyl. Heroine has increased from 2012 to 2016 but it declined steadily in 2017 and 2018.
 
 ```{r visData3, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 
@@ -263,16 +264,16 @@ g + geom_line(aes(color = Drug, alpha = 0.5), lwd =1.5) + labs(title = "No. of I
 
 ```
 
-
+This barplot shows the distribution of ages combining all years. 
 
 ```{r visData4, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 #Plot Year with Age and Sex
 g<- ggplot(data = drugOverDoseTD %>% select(Age, Sex) %>% drop_na() %>% filter(Sex != 'Unknown'), aes(x = Age, fill = Sex))
-g + geom_bar()
+g + geom_bar() 
 
 ```
 
-
+This line plot displays the no of incidents over the year for both sex Male and Female. For female the incidents has a steady rise from 2012 to 2017 and a slight decrease in 2018. For male it also has a steady rise from 2012 to 2014 but has a sharp rise from 2014 to 2017 and stabilizes in 2018.
 
 ```{r visData5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 
@@ -284,7 +285,7 @@ g<- ggplot(data = drugYearSexCount, aes(x = Year, y = Count))
 g + geom_line(aes(color = Sex), lwd =1.5)
 ```
 
-
+The dataset also captures whether the drug responsible is opioid or not and we don't have this data before 2015. The line plot clearly shows we have a steep and steady rise from 2015 to 2016 and 2016 to 2016 respectively.
 
 ```{r visData6, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 drugOpioid <- drugOverDoseTD %>% group_by(Year, AnyOpioid) %>% summarise(OpioidRelatedDeath = n()) %>% drop_na()
