@@ -57,6 +57,10 @@ knitr::include_graphics("./files/JSON_DESC5.gif")
 There are several JSON data sets are available from federal/state/county/city or other sources. We have selected the <a href = "https://data.ct.gov/Health-and-Human-Services/Accidental-Drug-Related-Deaths-2012-2018/rybz-nyjw" > accidental drug related deaths from 2012-2018 dataset </a> from state of Connecticut. A "Y" value under the different substance columns indicates that particular substance was detected. Data are derived from an investigation by the Office of the Chief Medical Examiner which includes the toxicity report, death certificate, as well as a scene investigation. <br>
 The dataset contains 5105 rows and 42 columns and each row is a Death. The data captures Date of the incident, Sex, Race, Age, Location Data, Resposible Drug, Cause of Death, Opiod or Not etc.
 
+# Packages for Reading JSON Data
+
+We have used jsonlite package to read JSON data. The package offers ﬂexible, robust, high performance tools for working with JSON in R and is particularly powerful for building pipelines and interacting with a web API. It reads JSON data and converts it to a R data type usually List or Data Frame which can be used for data manipulation and further computation. This is ideal for interacting with web APIs, or to build pipelines where data structures seamlessly flow in and out of R using JSON. The most useful functions are ` fromJSON() ` and `toJSON()`.
+
 # Reading JSON File
 
 ### Download and Examine the JSON file
