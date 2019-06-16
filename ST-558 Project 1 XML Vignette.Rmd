@@ -165,7 +165,7 @@ deathDF2<-deathDF %>% select(everything()) %>% mutate(AgeRange =ifelse(`Life Exp
 
 ### Full Table
 
-The conitigency table below shows that the data for each race and sex have equal counts of estimates.
+The conitigency table below shows that the data for each race and sex have equal counts of estimates. **This table looks confusing to me. All the row and column shows same number. What's the significance here?**
 
 ```{r, race_sex_contigency_table, warning=FALSE, echo=FALSE}
 # Create a 2-D contigency table
@@ -343,3 +343,4 @@ g <- ggplot(deathDF2, aes(x= Year, y=`Life Expectancy`, col=Race))
 g+ geom_point(size = 0.5, alpha = 0.6)+
   geom_smooth(aes(group=Race), method = lm, col="black") + labs(y="Life Expectancy") + ggtitle("Life Expectancy ariation from 1900 to 2015")
 ```
+**Good Work**
