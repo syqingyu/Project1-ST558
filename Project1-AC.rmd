@@ -66,7 +66,7 @@ We have used jsonlite package to read JSON data. The package offers ﬂexible, r
 
 ### Download and Examine the JSON file
 
-After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox. The JSON has a metadata portion along with the data segment.
+After we have downloaded the JSON file from the above mentioned link we have examined it in the firefox[Web Browser]. The JSON has a metadata portion along with the data segment.
 
 ```{r JSON PIC1, out.width = "400px", echo=FALSE}
 knitr::include_graphics("./files/JSON1.jpg")
