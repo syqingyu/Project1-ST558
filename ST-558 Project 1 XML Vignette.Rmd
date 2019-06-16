@@ -330,7 +330,7 @@ The boxplot for mortality provides that the median of mortality (every 100,000) 
 # create a side by side boxplot for races and mortality
 g <- ggplot(deathDF2, aes(x=Race, y=Mortality))
 g+geom_boxplot()+
-  geom_point(aes(col=Race), position = "jitter")
+  geom_point(aes(col=Race), position = "jitter")+
   ggtitle("Boxplot for Mortality")
 ```
 
