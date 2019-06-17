@@ -5,10 +5,10 @@ date: "<center>6/3/2019</center>"
 output:
   html_document:
     toc: yes
-    toc_depth: 4
+    toc-depth: 4
   pdf_document:
     toc: yes
-    toc_depth: 4
+    toc-depth: 4
 ---
 
 ```{r setup, include=FALSE}
@@ -208,6 +208,7 @@ This is a 3 way table between Race, Sex and Age variables. It displays count and
 ```{r summData5, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
 datatable(drugOverDoseTD %>% group_by(Race, Sex) %>% summarise(Count = n(), Mean_Age = round(mean(Age, na.rm = TRUE), 2)) %>% drop_na() %>% arrange(Mean_Age), options = list(dom ="t"), caption = "Race - Sex - Age Summary", rownames = FALSE)
 ```
+
 #### Average Age Summary
 
 In the next summary, we can see tha average age based on sex and race. We found that the average age for men was 42 and for women was 43. The interesting thing was that for unknown gender, the average age was 66. For the average age by race, we found that the Chinese had the lowest average age of 24 and Hawaiians had the highest average age of 58. 
@@ -222,16 +223,7 @@ avgAgeRace<-drugOverDoseTD %>% group_by(Race) %>% summarise(round(mean(Age),0))
 colnames(avgAgeRace)[colnames(avgAgeRace) == "round(mean(Age), 0)"] <- "Average Age"
 kable(avgAgeRace)
 ```
-#### Counts by Race & Sex
 
-Below we have two tables that show the count by year and sex. For females, the year 2018 has the highest number of incidents and for males, the year 2017 has the highest number of incidents. 
-
-```{r summdata7, echo=TRUE, message=FALSE, warning=FALSE, error=TRUE}
-raceage<-table(drugOverDoseTD$Race, drugOverDoseTD$Age_Category)
-kable(raceage)
-sexyear<-table(drugOverDoseTD$Sex, drugOverDoseTD$Year)
-kable(sexyear)
-```
 
 ### Visualise data
 
